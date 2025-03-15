@@ -2,161 +2,159 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Gateway</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
-        integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        body {
-            background: linear-gradient(135deg, #e0eafc, #cfdef3);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Gateway</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+    .card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
 
-        .card-header {
-            background: #25D366;
-            color: white;
-            padding: 1.5rem;
-            border-radius: 20px 20px 0 0;
-        }
+    .card-header {
+      background: #25D366;
+      color: white;
+      padding: 1.5rem;
+      border-radius: 20px 20px 0 0;
+    }
 
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
 
-        #qr-image {
-            max-width: 250px;
-            border-radius: 10px;
-            border: 2px solid #25D366;
-            transition: opacity 0.5s ease;
-        }
+    #qr-image {
+      max-width: 250px;
+      border-radius: 10px;
+      border: 2px solid #25D366;
+      transition: opacity 0.5s ease;
+    }
 
-        #no-qr {
-            color: #6c757d;
-            font-style: italic;
-        }
+    #no-qr {
+      color: #6c757d;
+      font-style: italic;
+    }
 
-        .animate-fade {
-            animation: fadeIn 0.5s ease-in;
-        }
+    .animate-fade {
+      animation: fadeIn 0.5s ease-in;
+    }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
 
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container py-5">
-        <div class="card mx-auto" style="max-width: 500px;">
-            <div class="card-header text-center">
-                <h1 class="fs-3 mb-0">WhatsApp Gateway</h1>
-            </div>
-            <div class="card-body p-4 text-center">
-                <div class="mb-4">
-                    <p class="mb-1">Connection Status:</p>
-                    <span id="status-text" class="status-badge bg-secondary text-white">Loading...</span>
-                </div>
-                <div id="is-status" class="d-flex justify-content-center">
-                    <div id="no-qr" style="display: none;">No QR Code available. Please wait...</div>
-                    <img id="qr-image" class="img-fluid animate-fade" alt="QR Code" style="display: none;" />
-                </div>
-            </div>
+  <div class="container py-5">
+    <div class="card mx-auto" style="max-width: 500px;">
+      <div class="card-header text-center">
+        <h1 class="fs-3 mb-0">WhatsApp Gateway</h1>
+      </div>
+      <div class="card-body p-4 text-center">
+        <div class="mb-4">
+          <p class="mb-1">Connection Status:</p>
+          <span id="status-text" class="status-badge bg-secondary text-white">Loading...</span>
         </div>
-
-        <div class="fixed-bottom">
-            <div class="text-center p-3">
-                <p class="mb-0">
-                    <a href="https://github.com/sleepingtime94/whatsapp-schedule" target="_blank">@sleepingtime94</a>
-                </p>
-            </div>
+        <div id="is-status" class="d-flex justify-content-center">
+          <div id="no-qr" style="display: none;">No QR Code available. Please wait...</div>
+          <img id="qr-image" class="img-fluid animate-fade" alt="QR Code" style="display: none;" />
         </div>
+      </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+    <div class="fixed-bottom">
+      <div class="text-center p-3">
+        <p class="mb-0">
+          <a class="text-decoration-none fw-bold" href="https://github.com/sleepingtime94/whatsapp-schedule" target="_blank">Source Code</a> |@sleepingtime94</a>
+        </p>
+      </div>
+    </div>
+  </div>
 
-        function updateStatus(status) {
-            const statusText = document.getElementById('status-text');
-            const qrImage = document.getElementById('qr-image');
-            const noQRMessage = document.getElementById('no-qr');
-            statusText.textContent = status;
-            switch (status) {
-                case "waiting-for-scan":
-                    statusText.textContent = "Waiting for Scan";
-                    statusText.className = "status-badge bg-warning text-dark";
-                    break;
-                case "authenticated":
-                    statusText.textContent = "Authenticated";
-                    statusText.className = "status-badge bg-info text-white";
-                    break;
-                case "ready":
-                    statusText.textContent = "Ready";
-                    statusText.className = "status-badge bg-success text-white";
-                    qrImage.style.display = 'none';
-                    noQRMessage.style.display = 'none';
-                    break;
-                case "failed":
-                    statusText.textContent = "Failed";
-                    statusText.className = "status-badge bg-danger text-white";
-                    break;
-                case "disconnected":
-                    statusText.textContent = "Disconnected";
-                    statusText.className = "status-badge bg-secondary text-white";
-                    break;
-                default:
-                    statusText.textContent = "Unknown";
-                    statusText.className = "status-badge bg-secondary text-white";
-            }
-        }
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
 
-        fetch("/current-status")
-            .then((response) => response.json())
-            .then((data) => {
-                updateStatus(data.status);
-            })
-            .catch((error) => {
-                console.error("Error fetching current status:", error);
-            });
+    function updateStatus(status) {
+      const statusText = document.getElementById('status-text');
+      const qrImage = document.getElementById('qr-image');
+      const noQRMessage = document.getElementById('no-qr');
+      statusText.textContent = status;
+      switch (status) {
+        case "waiting-for-scan":
+          statusText.textContent = "Waiting for Scan";
+          statusText.className = "status-badge bg-warning text-dark";
+          break;
+        case "authenticated":
+          statusText.textContent = "Authenticated";
+          statusText.className = "status-badge bg-info text-white";
+          break;
+        case "ready":
+          statusText.textContent = "Ready";
+          statusText.className = "status-badge bg-success text-white";
+          qrImage.style.display = 'none';
+          noQRMessage.style.display = 'none';
+          break;
+        case "failed":
+          statusText.textContent = "Failed";
+          statusText.className = "status-badge bg-danger text-white";
+          break;
+        case "disconnected":
+          statusText.textContent = "Disconnected";
+          statusText.className = "status-badge bg-secondary text-white";
+          break;
+        default:
+          statusText.textContent = "Unknown";
+          statusText.className = "status-badge bg-secondary text-white";
+      }
+    }
 
-        socket.on("connection-status", (data) => {
-            updateStatus(data.status);
-        });
+    fetch("/current-status")
+      .then((response) => response.json())
+      .then((data) => {
+        updateStatus(data.status);
+      })
+      .catch((error) => {
+        console.error("Error fetching current status:", error);
+      });
 
-        socket.on("qr-code", (data) => {
-            const qrImage = document.getElementById('qr-image');
-            const noQRMessage = document.getElementById('no-qr');
-            if (data.qrCode) {
-                qrImage.src = data.qrCode;
-                qrImage.style.display = 'block';
-                noQRMessage.style.display = 'none';
-            } else {
-                qrImage.style.display = 'none';
-                noQRMessage.style.display = 'block';
-            }
-        });
-    </script>
+    socket.on("connection-status", (data) => {
+      updateStatus(data.status);
+    });
+
+    socket.on("qr-code", (data) => {
+      const qrImage = document.getElementById('qr-image');
+      const noQRMessage = document.getElementById('no-qr');
+      if (data.qrCode) {
+        qrImage.src = data.qrCode;
+        qrImage.style.display = 'block';
+        noQRMessage.style.display = 'none';
+      } else {
+        qrImage.style.display = 'none';
+        noQRMessage.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 
 </html>

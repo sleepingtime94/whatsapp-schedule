@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
-    // executablePath: "/usr/bin/chromium-browser",
+    executablePath: "/usr/bin/chromium-browser",
     headless: true,
     args: [
       "--no-sandbox",
