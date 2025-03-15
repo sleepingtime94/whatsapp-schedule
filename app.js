@@ -63,11 +63,11 @@ function validateScheduleData(schedules) {
   if (!Array.isArray(schedules)) {
     throw new Error("Input must be an array.");
   }
-  for (const schedule of schedules) {
+  schedules.forEach((schedule) => {
     if (!schedule.time || !schedule.phone || !schedule.message) {
-      throw new Error("Missing required fields: time, phone or message.");
+      throw new Error("Missing required fields: time, phone, or message.");
     }
-  }
+  });
   return true;
 }
 
@@ -80,12 +80,11 @@ async function logMessageToFile(logData) {
       const parsedData = JSON.parse(fileContent);
       if (Array.isArray(parsedData)) logs = parsedData;
     }
-    const now = new Date();
-    const isNowTime = now.toLocaleString("en-US", {
+    const now = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Makassar",
       hour12: false,
     });
-    logs.push({ ...logData, date: isNowTime });
+    logs.push({ ...logData, date: now });
     await fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), "utf8");
     console.log(":: Logs created");
   } catch (error) {
@@ -96,15 +95,18 @@ async function logMessageToFile(logData) {
 function scheduleMessage(scheduleData) {
   try {
     const key = `${scheduleData.phone}-${scheduleData.time}`;
+
     if (activeJobs.has(key)) {
       console.log(`:: Job for ${key} already scheduled, skipping.`);
       return;
     }
+
     const job = schedule.scheduleJob(scheduleData.time, async () => {
       const payload = {
         phone: phoneNumberFormatter(scheduleData.phone),
         message: scheduleData.message,
       };
+
       try {
         const response = await client.sendMessage(
           payload.phone,
@@ -114,12 +116,16 @@ function scheduleMessage(scheduleData) {
           `:: Process to send: ${scheduleData.phone} at ${scheduleData.time}`
         );
         activeJobs.delete(key);
+
         await logMessageToFile({
           status: "sent",
           messageId: response.id._serialized,
         });
       } catch (error) {
-        console.error(`Failed send to: ${scheduleData.phone}:`, error.message);
+        console.error(
+          `Failed to send to: ${scheduleData.phone}:`,
+          error.message
+        );
         await logMessageToFile({
           phone: scheduleData.phone,
           status: "failed",
@@ -183,11 +189,13 @@ app.get("/current-status", (req, res) => {
 app.post("/schedule", async (req, res) => {
   try {
     const schedules = req.body;
+
     validateScheduleData(schedules);
+
     schedules.forEach((scheduleData) => {
       scheduleMessage(scheduleData);
     });
-    await logMessageToFile({ data: schedules });
+
     res.status(200).json({ message: "Schedule created.", data: schedules });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -211,15 +219,18 @@ app.post("/send-message", async (req, res) => {
       });
     }
     const response = await client.sendMessage(formattedNumber, message);
+
     await logMessageToFile({
       status: "sent",
       messageId: response.id._serialized,
     });
+
     res.status(200).json({
       status: true,
       message: "Message sent successfully",
       response: response.id._serialized,
     });
+
     console.log(":: Delivered:", response.id._serialized);
   } catch (error) {
     await logMessageToFile({
@@ -237,6 +248,7 @@ app.post("/send-message", async (req, res) => {
 
 app.get("/logs", async (req, res) => {
   const logFilePath = "./logs.json";
+
   try {
     if (await fs.stat(logFilePath).catch(() => false)) {
       const logs = JSON.parse(await fs.readFile(logFilePath, "utf8"));
@@ -253,6 +265,7 @@ app.get("/logs", async (req, res) => {
 // Initialize and Start Server
 client.initialize();
 const PORT = process.env.PORT || 9000;
+
 server.listen(PORT, () => {
   console.log(`:: Running on port ${PORT}`);
 });
