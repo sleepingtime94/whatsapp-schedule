@@ -92,6 +92,8 @@ async function logMessageToFile(logData) {
   }
 }
 
+const sentMessages = new Set(); // Menyimpan pesan yang sudah dikirim
+
 function scheduleMessage(scheduleData) {
   try {
     const key = `${scheduleData.phone}-${scheduleData.time}`;
@@ -107,15 +109,24 @@ function scheduleMessage(scheduleData) {
         message: scheduleData.message,
       };
 
+      // Cek apakah pesan sudah pernah dikirim
+      if (sentMessages.has(key)) {
+        console.log(`:: Message already sent for ${key}, skipping.`);
+        return;
+      }
+
       try {
         const response = await client.sendMessage(
           payload.phone,
           payload.message
         );
+
         console.log(
           `:: Process to send: ${scheduleData.phone} at ${scheduleData.time}`
         );
-        activeJobs.delete(key);
+
+        sentMessages.add(key); // Tandai bahwa pesan telah dikirim
+        activeJobs.delete(key); // Hapus dari daftar aktif
 
         await logMessageToFile({
           status: "sent",
@@ -133,6 +144,7 @@ function scheduleMessage(scheduleData) {
         });
       }
     });
+
     activeJobs.set(key, job);
     console.log(`:: Scheduled job for ${key}`);
   } catch (error) {
@@ -192,11 +204,22 @@ app.post("/schedule", async (req, res) => {
 
     validateScheduleData(schedules);
 
-    schedules.forEach((scheduleData) => {
+    const uniqueSchedules = schedules.filter(
+      (scheduleData) =>
+        !activeJobs.has(`${scheduleData.phone}-${scheduleData.time}`)
+    );
+
+    if (uniqueSchedules.length === 0) {
+      return res.status(400).json({ message: "All schedules are duplicates" });
+    }
+
+    uniqueSchedules.forEach((scheduleData) => {
       scheduleMessage(scheduleData);
     });
 
-    res.status(200).json({ message: "Schedule created.", data: schedules });
+    res
+      .status(200)
+      .json({ message: "Schedules created.", data: uniqueSchedules });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
